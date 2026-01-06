@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechLearn Hub - Student Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-bg { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .gradient-text { background: linear-gradient(135deg, #3b82f6, #1e3a8a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .floating { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .stats-counter { font-variant-numeric: tabular-nums; }
+        #p5-canvas { position: absolute; top: 0; left: 0; z-index: 1; }
+        .hero-content { position: relative; z-index: 2; }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-sm z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-blue-900">TechLearn Hub</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-blue-900 font-medium px-3 py-2 rounded-md text-sm bg-blue-50">Home</a>
+                        <a href="schedule.html" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm hover:bg-gray-50 transition-colors">Schedule</a>
+                        <a href="dashboard.html" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm hover:bg-gray-50 transition-colors">Dashboard</a>
+                        <a href="resources.html" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm hover:bg-gray-50 transition-colors">Resources</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-900">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-100">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="index.html" class="text-blue-900 font-medium block px-3 py-2 rounded-md text-base bg-blue-50">Home</a>
+                <a href="schedule.html" class="text-gray-600 hover:text-blue-900 block px-3 py-2 rounded-md text-base hover:bg-gray-50">Schedule</a>
+                <a href="dashboard.html" class="text-gray-600 hover:text-blue-900 block px-3 py-2 rounded-md text-base hover:bg-gray-50">Dashboard</a>
+                <a href="resources.html" class="text-gray-600 hover:text-blue-900 block px-3 py-2 rounded-md text-base hover:bg-gray-50">Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-center relative overflow-hidden pt-16">
+        <div id="hero-canvas" class="absolute inset-0"></div>
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="text-white">
+                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        Learn <span class="text-yellow-300" id="typed-text"></span>
+                    </h1>
+                    <p class="text-xl mb-8 text-blue-100 leading-relaxed">
+                        Connect with fellow students, share knowledge, and master technology together. 
+                        Our peer-to-peer learning platform makes coding accessible, collaborative, and fun.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="schedule.html" class="bg-yellow-400 text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors text-center">
+                            Find a Tutor
+                        </a>
+                        <a href="resources.html" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-colors text-center">
+                            Explore Resources
+                        </a>
+                    </div>
+                </div>
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Students collaborating on technology projects" class="rounded-lg shadow-2xl floating">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-blue-900 stats-counter" data-target="2500">0</div>
+                    <div class="text-gray-600 mt-2">Students Helped</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-blue-900 stats-counter" data-target="1500">0</div>
+                    <div class="text-gray-600 mt-2">Sessions Completed</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-blue-900 stats-counter" data-target="500">0</div>
+                    <div class="text-gray-600 mt-2">Study Groups</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-blue-900 stats-counter" data-target="95">0</div>
+                    <div class="text-gray-600 mt-2">Success Rate %</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Paths Section -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Choose Your Learning Path</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Explore different technology tracks designed by students, for students. 
+                    Each path includes curated resources, peer support, and hands-on projects.
+                </p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="card-hover bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Programming Fundamentals</h3>
+                    <p class="text-gray-600 mb-6">Master Python, JavaScript, and Java with peer-guided lessons and coding challenges.</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full">Beginner Friendly</span>
+                    </div>
+                    <a href="resources.html?path=programming" class="text-blue-600 font-medium hover:text-blue-800">Start Learning →</a>
+                </div>
+                
+                <div class="card-hover bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Web Development</h3>
+                    <p class="text-gray-600 mb-6">Build modern websites with HTML, CSS, React, and Node.js through hands-on projects.</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Project-Based</span>
+                    </div>
+                    <a href="resources.html?path=webdev" class="text-blue-600 font-medium hover:text-blue-800">Start Learning →</a>
+                </div>
+                
+                <div class="card-hover bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                    <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Data Science</h3>
+                    <p class="text-gray-600 mb-6">Analyze data with Python, R, and SQL. Learn statistics and machine learning basics.</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full">Analytics Focus</span>
+                    </div>
+                    <a href="resources.html?path=datascience" class="text-blue-600 font-medium hover:text-blue-800">Start Learning →</a>
+                </div>
+                
+                <div class="card-hover bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                    <div class="w-16 h-16 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">AI & Machine Learning</h3>
+                    <p class="text-gray-600 mb-6">Explore artificial intelligence with TensorFlow, PyTorch, and neural networks.</p>
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full">Advanced</span>
+                    </div>
+                    <a href="resources.html?path=ai" class="text-blue-600 font-medium hover:text-blue-800">Start Learning →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories Carousel -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Student Success Stories</h2>
+                <p class="text-xl text-gray-600">See how peer learning has transformed students' careers</p>
+            </div>
+            <div class="splide" id="testimonials-slider">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <div class="bg-white rounded-xl shadow-lg p-8 mx-4">
+                                <div class="flex items-center mb-6">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/eu-images.contentstack.com/17647e38b39a6008ecc6c643bb83886a1a209078.jpg" alt="Sarah M." class="w-16 h-16 rounded-full object-cover">
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-900">Sarah M.</h4>
+                                        <p class="text-gray-600">Computer Science Student</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 mb-4">"The peer tutoring program helped me understand JavaScript concepts that seemed impossible in class. My tutor explained everything in a way that made sense to me."</p>
+                                <div class="flex text-yellow-400">
+                                    ★★★★★
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="bg-white rounded-xl shadow-lg p-8 mx-4">
+                                <div class="flex items-center mb-6">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/images.stockcake.com/b84941979d5342e357256bea4da537046b0ef564.jpg" alt="Alex K." class="w-16 h-16 rounded-full object-cover">
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-900">Alex K.</h4>
+                                        <p class="text-gray-600">Data Science Major</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 mb-4">"Study groups made statistics so much more approachable. We worked through problems together and I finally understood the concepts. Now I'm tutoring others!"</p>
+                                <div class="flex text-yellow-400">
+                                    ★★★★★
+                                </div>
+                            </div>
+                        </li>
+                        <li class="splide__slide">
+                            <div class="bg-white rounded-xl shadow-lg p-8 mx-4">
+                                <div class="flex items-center mb-6">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/theyoungmaker.com/6a1a524b93bdf591d469a46e2e6fbdfc7f7b0e2d.jpg" alt="Maria L." class="w-16 h-16 rounded-full object-cover">
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-900">Maria L.</h4>
+                                        <p class="text-gray-600">Web Development Student</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 mb-4">"The collaborative projects taught me more than any lecture. Working with peers on real websites gave me confidence and portfolio pieces for job applications."</p>
+                                <div class="flex text-yellow-400">
+                                    ★★★★★
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-20 hero-bg">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-white mb-6">Ready to Start Learning?</h2>
+            <p class="text-xl text-blue-100 mb-8">Join thousands of students who are already learning together on TechLearn Hub</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="schedule.html" class="bg-yellow-400 text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+                    Book Your First Session
+                </a>
+                <a href="dashboard.html" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-colors">
+                    View Your Dashboard
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">TechLearn Hub</h3>
+                    <p class="text-gray-400">Empowering students through peer-to-peer technology education.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="schedule.html" class="hover:text-white">Schedule Session</a></li>
+                        <li><a href="dashboard.html" class="hover:text-white">Student Dashboard</a></li>
+                        <li><a href="resources.html" class="hover:text-white">Learning Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Learning Paths</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="resources.html?path=programming" class="hover:text-white">Programming</a></li>
+                        <li><a href="resources.html?path=webdev" class="hover:text-white">Web Development</a></li>
+                        <li><a href="resources.html?path=datascience" class="hover:text-white">Data Science</a></li>
+                        <li><a href="resources.html?path=ai" class="hover:text-white">AI & ML</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Email: hello@techlearnhub.com</li>
+                        <li>Phone: (555) 123-4567</li>
+                        <li>Location: Global (Online)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 TechLearn Hub. Built by students, for students.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

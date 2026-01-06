@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule - TechLearn Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .time-slot { transition: all 0.2s ease; }
+        .time-slot:hover { background-color: #dbeafe; border-color: #3b82f6; }
+        .time-slot.selected { background-color: #3b82f6; color: white; }
+        .tutor-card { transition: all 0.3s ease; }
+        .tutor-card:hover { transform: scale(1.02); }
+        .calendar-day { transition: all 0.2s ease; }
+        .calendar-day:hover { background-color: #f3f4f6; }
+        .calendar-day.selected { background-color: #3b82f6; color: white; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-sm z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-blue-900">TechLearn Hub</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm hover:bg-gray-50 transition-colors">Home</a>
+                        <a href="schedule.html" class="text-blue-900 font-medium px-3 py-2 rounded-md text-sm bg-blue-50">Schedule</a>
+                        <a href="dashboard.html" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm hover:bg-gray-50 transition-colors">Dashboard</a>
+                        <a href="resources.html" class="text-gray-600 hover:text-blue-900 px-3 py-2 rounded-md text-sm hover:bg-gray-50 transition-colors">Resources</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-900">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-100">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="index.html" class="text-gray-600 hover:text-blue-900 block px-3 py-2 rounded-md text-base hover:bg-gray-50">Home</a>
+                <a href="schedule.html" class="text-blue-900 font-medium block px-3 py-2 rounded-md text-base bg-blue-50">Schedule</a>
+                <a href="dashboard.html" class="text-gray-600 hover:text-blue-900 block px-3 py-2 rounded-md text-base hover:bg-gray-50">Dashboard</a>
+                <a href="resources.html" class="text-gray-600 hover:text-blue-900 block px-3 py-2 rounded-md text-base hover:bg-gray-50">Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-24 pb-12 bg-gradient-to-r from-blue-900 to-blue-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-white">
+                <h1 class="text-4xl font-bold mb-4">Find Your Perfect Study Session</h1>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    Connect with peer tutors and study groups that match your learning style and schedule
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="py-8 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex flex-wrap gap-4">
+                    <select id="subject-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all">All Subjects</option>
+                        <option value="programming">Programming</option>
+                        <option value="webdev">Web Development</option>
+                        <option value="datascience">Data Science</option>
+                        <option value="ai">AI & Machine Learning</option>
+                    </select>
+                    <select id="session-type-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all">All Session Types</option>
+                        <option value="tutoring">1-on-1 Tutoring</option>
+                        <option value="group">Group Study</option>
+                        <option value="workshop">Workshop</option>
+                    </select>
+                    <select id="level-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all">All Levels</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <button id="view-calendar-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    View Calendar
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Calendar View -->
+                <div id="calendar-view" class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-semibold text-gray-900">Available Sessions</h2>
+                            <div class="flex items-center space-x-2">
+                                <button id="prev-week" class="p-2 hover:bg-gray-100 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                </button>
+                                <span id="current-week" class="text-gray-700 font-medium">Jan 6 - Jan 12, 2025</span>
+                                <button id="next-week" class="p-2 hover:bg-gray-100 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-7 gap-2 mb-4">
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Mon</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Tue</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Wed</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Thu</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Fri</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Sat</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Sun</div>
+                        </div>
+                        
+                        <div id="calendar-grid" class="grid grid-cols-7 gap-2">
+                            <!-- Calendar days will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutor Sidebar -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Featured Tutors</h3>
+                        <div class="space-y-4">
+                            <div class="tutor-card border border-gray-200 rounded-lg p-4 cursor-pointer" data-tutor="sarah">
+                                <div class="flex items-center mb-3">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/eu-images.contentstack.com/17647e38b39a6008ecc6c643bb83886a1a209078.jpg" alt="Sarah Chen" class="w-12 h-12 rounded-full object-cover">
+                                    <div class="ml-3">
+                                        <h4 class="font-medium text-gray-900">Sarah Chen</h4>
+                                        <p class="text-sm text-gray-600">Python & Data Science</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex text-yellow-400 text-sm">★★★★★</div>
+                                    <span class="text-sm text-gray-500">$25/hr</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">Senior CS student with 3+ years tutoring experience</p>
+                            </div>
+
+                            <div class="tutor-card border border-gray-200 rounded-lg p-4 cursor-pointer" data-tutor="alex">
+                                <div class="flex items-center mb-3">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/images.stockcake.com/b84941979d5342e357256bea4da537046b0ef564.jpg" alt="Alex Rodriguez" class="w-12 h-12 rounded-full object-cover">
+                                    <div class="ml-3">
+                                        <h4 class="font-medium text-gray-900">Alex Rodriguez</h4>
+                                        <p class="text-sm text-gray-600">Web Development</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex text-yellow-400 text-sm">★★★★★</div>
+                                    <span class="text-sm text-gray-500">$20/hr</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">Full-stack developer and React specialist</p>
+                            </div>
+
+                            <div class="tutor-card border border-gray-200 rounded-lg p-4 cursor-pointer" data-tutor="maria">
+                                <div class="flex items-center mb-3">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/theyoungmaker.com/6a1a524b93bdf591d469a46e2e6fbdfc7f7b0e2d.jpg" alt="Maria Kim" class="w-12 h-12 rounded-full object-cover">
+                                    <div class="ml-3">
+                                        <h4 class="font-medium text-gray-900">Maria Kim</h4>
+                                        <p class="text-sm text-gray-600">AI & Machine Learning</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex text-yellow-400 text-sm">★★★★☆</div>
+                                    <span class="text-sm text-gray-500">$30/hr</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">Graduate student researching neural networks</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Study Groups</h3>
+                        <div class="space-y-3">
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-gray-900">JavaScript Study Group</h4>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">4 spots left</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">Wednesdays 7-9 PM</p>
+                                <p class="text-xs text-gray-500">Led by Alex Rodriguez</p>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-medium text-gray-900">Python for Beginners</h4>
+                                    <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">8 spots left</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2">Saturdays 2-4 PM</p>
+                                <p class="text-xs text-gray-500">Led by Sarah Chen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-semibold text-gray-900">Book Session</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="modal-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button id="confirm-booking" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    Confirm Booking
+                </button>
+                <button id="cancel-booking" class="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">TechLearn Hub</h3>
+                    <p class="text-gray-400">Empowering students through peer-to-peer technology education.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="index.html" class="hover:text-white">Home</a></li>
+                        <li><a href="dashboard.html" class="hover:text-white">Student Dashboard</a></li>
+                        <li><a href="resources.html" class="hover:text-white">Learning Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Learning Paths</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="resources.html?path=programming" class="hover:text-white">Programming</a></li>
+                        <li><a href="resources.html?path=webdev" class="hover:text-white">Web Development</a></li>
+                        <li><a href="resources.html?path=datascience" class="hover:text-white">Data Science</a></li>
+                        <li><a href="resources.html?path=ai" class="hover:text-white">AI & ML</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>Email: hello@techlearnhub.com</li>
+                        <li>Phone: (555) 123-4567</li>
+                        <li>Location: Global (Online)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 TechLearn Hub. Built by students, for students.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-semibold text-gray-900">Book Session</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="modal-content">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button id="confirm-booking" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    Confirm Booking
+                </button>
+                <button id="cancel-booking" class="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
